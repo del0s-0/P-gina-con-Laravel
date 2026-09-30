@@ -1,0 +1,2 @@
+# Entorno local de Docker (UID del host). Compose usa 1000 si este archivo no existe.
+.env
