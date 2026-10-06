@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Inicio')
+@section('title', 'Inicio', 'Configuración')
 
 @section('content')
     <h1 class="mb-4 text-[1.6rem] font-semibold text-gray-800">Homepage</h1>

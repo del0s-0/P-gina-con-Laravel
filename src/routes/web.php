@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\usercontroller;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -22,3 +23,8 @@ Route::post('/logout', [LoginController::class, 'destroy'])
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware('auth')->name('dashboard');
+
+
+Route::get('/users', [usercontroller::class, 'index'])
+    ->middleware('auth')
+    ->name('users');

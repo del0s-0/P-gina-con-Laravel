@@ -37,6 +37,12 @@
                 >
                     Inicio
                 </a>
+                <a
+                    href="{{ route('home') }}"
+                    class="w-full text-[0.95rem] no-underline md:w-auto {{ request()->routeIs('home') ? 'text-white' : 'text-gray-300 hover:text-white' }}"
+                >
+                    Configuración
+                </a>
                 @auth
                     <a
                         href="{{ route('dashboard') }}"
@@ -46,6 +52,17 @@
                     </a>
                 @endauth
             </div>
+            @auth 
+
+            <div class="flex flex-col items-start gap-3 md:flex-row md:items-center md:gap-4">
+                <a
+                    href="{{ route('users') }}"
+                    class="w-full text-[0.95rem] no-underline md:w-auto {{ request()->routeIs('users') ? 'text-white' : 'text-gray-300 hover:text-white' }}"
+                >
+                    Usuarios
+                </a>
+            </div>
+            @endauth
 
             <div class="flex flex-col items-start gap-3 md:flex-row md:items-center md:gap-4">
                 @auth
