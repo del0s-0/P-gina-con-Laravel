@@ -38,7 +38,7 @@ if [ ! -f "$APP_DIR/artisan" ]; then
   mkdir -p /tmp/laravel-app
   chown www-data:www-data /tmp/laravel-app
   run_as_www composer create-project --prefer-dist laravel/laravel /tmp/laravel-app
-  cp -a /tmp/laravel-app/. "$APP_DIR"/
+  cp -r /tmp/laravel-app/. "$APP_DIR"/
   rm -rf /tmp/laravel-app
   echo "[entrypoint] Laravel installed"
 fi
@@ -70,6 +70,9 @@ if [ -f "$APP_DIR/.env" ]; then
     -e 's/^#\? *DB_USERNAME=.*/DB_USERNAME=root/' \
     -e 's/^#\? *DB_PASSWORD=.*/DB_PASSWORD=root/' \
     -e 's|^APP_URL=.*|APP_URL=http://localhost:8080|' \
+    -e 's/^SESSION_DRIVER=.*/SESSION_DRIVER=database/' \
+    -e 's/^CACHE_STORE=.*/CACHE_STORE=database/' \
+    -e 's/^QUEUE_CONNECTION=.*/QUEUE_CONNECTION=database/' \
     "$APP_DIR/.env"
 
   cd "$APP_DIR"

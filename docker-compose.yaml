@@ -11,7 +11,9 @@ services:
       HOST_UID: ${HOST_UID:-1000}
       HOST_GID: ${HOST_GID:-1000}
     volumes:
-      - ./src:/var/www/html
+      # :Z reetiqueta ./src para SELinux; sin esto el contenedor no puede leer
+      # artisan/vendor y el entrypoint intenta copiar la app (Permission denied).
+      - ./src:/var/www/html:Z
     ports:
       - "8080:80"
       - "5173:5173"
