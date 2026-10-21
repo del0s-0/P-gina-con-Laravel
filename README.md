@@ -5,7 +5,7 @@ Aplicación Laravel (login, registro y dashboard) servida con Apache y PHP, Mari
 | Servicio | URL | Notas |
 |---|---|---|
 | Aplicación | http://localhost:8080 | Registro en `/register`, login en `/login` |
-| phpMyAdmin | http://localhost:8081 | Usuario `root`, contraseña `root`, base `laraveldb` |
+| phpMyAdmin | http://localhost:8082 | Usuario `root`, contraseña `root`, base `laraveldb` |
 
 Esas credenciales son solo para este laboratorio local.
 
@@ -22,6 +22,12 @@ docker compose up --build
 ```
 
 El primer arranque tarda varios minutos: el contenedor copia `.env`, instala las dependencias de PHP (`composer install`), genera `APP_KEY`, corre las migraciones y compila el CSS con Vite. Cuando el log diga que Apache está en el puerto 80, abre http://localhost:8080.
+
+phpMyAdmin usa el puerto `8082` por defecto porque el `8081` suele estar ocupado en el host. Si también está en uso, cámbialo al arrancar:
+
+```bash
+PMA_PORT=8083 docker compose up --build
+```
 
 Para detener los contenedores:
 
