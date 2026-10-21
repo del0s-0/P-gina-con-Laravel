@@ -5,6 +5,16 @@ APP_DIR=/var/www/html
 HOST_UID="${HOST_UID:-1000}"
 HOST_GID="${HOST_GID:-1000}"
 
+# En Docker el entrypoint corre como root y baja a www-data con gosu.
+# En Podman rootless (userns keep-id) ya se ejecuta como www-data.
+run_as_www() {
+  if [ "$(id -u)" -eq 0 ]; then
+    gosu www-data "$@"
+  else
+    "$@"
+  fi
+}
+
 echo "[entrypoint] PHP $(php -r 'echo PHP_VERSION;') | host ${HOST_UID}:${HOST_GID}"
 
 groupmod -o -g "${HOST_GID}" www-data 2>/dev/null || true
@@ -27,15 +37,15 @@ if [ ! -f "$APP_DIR/artisan" ]; then
   rm -rf /tmp/laravel-app
   mkdir -p /tmp/laravel-app
   chown www-data:www-data /tmp/laravel-app
-  gosu www-data composer create-project --prefer-dist laravel/laravel /tmp/laravel-app
-  cp -a /tmp/laravel-app/. "$APP_DIR"/
+  run_as_www composer create-project --prefer-dist laravel/laravel /tmp/laravel-app
+  cp -r /tmp/laravel-app/. "$APP_DIR"/
   rm -rf /tmp/laravel-app
   echo "[entrypoint] Laravel installed"
 fi
 
 if [ -f "$APP_DIR/artisan" ] && [ ! -f "$APP_DIR/vendor/autoload.php" ]; then
   echo "[entrypoint] composer install (vendor no viene en el repositorio)..."
-  gosu www-data composer install --no-interaction --prefer-dist --working-dir="$APP_DIR"
+  run_as_www composer install --no-interaction --prefer-dist --working-dir="$APP_DIR"
 fi
 
 if [ ! -f "$APP_DIR/.env" ] && [ -f "$APP_DIR/.env.example" ]; then
@@ -60,18 +70,21 @@ if [ -f "$APP_DIR/.env" ]; then
     -e 's/^#\? *DB_USERNAME=.*/DB_USERNAME=root/' \
     -e 's/^#\? *DB_PASSWORD=.*/DB_PASSWORD=root/' \
     -e 's|^APP_URL=.*|APP_URL=http://localhost:8080|' \
+    -e 's/^SESSION_DRIVER=.*/SESSION_DRIVER=database/' \
+    -e 's/^CACHE_STORE=.*/CACHE_STORE=database/' \
+    -e 's/^QUEUE_CONNECTION=.*/QUEUE_CONNECTION=database/' \
     "$APP_DIR/.env"
 
   cd "$APP_DIR"
 
   if ! grep -q '^APP_KEY=base64:' .env 2>/dev/null; then
-    gosu www-data php artisan key:generate --force || true
+    run_as_www php artisan key:generate --force || true
   fi
 
-  gosu www-data php artisan migrate --force \
+  run_as_www php artisan migrate --force \
     || echo "[entrypoint] migrate skipped"
 
-  gosu www-data php artisan config:clear || true
+  run_as_www php artisan config:clear || true
 fi
 
 # Frontend: mismo flujo que

@@ -25,6 +25,9 @@ Route::get('/dashboard', function () {
 })->middleware('auth')->name('dashboard');
 
 
-Route::get('/users', [usercontroller::class, 'index'])
-    ->middleware('auth')
-    ->name('users');
+Route::middleware('auth')->group(function () {
+    Route::get('/users', [usercontroller::class, 'index'])->name('users');
+    Route::get('/users/create', [usercontroller::class, 'create'])->name('users.create');
+    Route::post('/users', [usercontroller::class, 'store'])->name('users.store');
+    Route::delete('/users/{user}', [usercontroller::class, 'destroy'])->name('users.destroy');
+});

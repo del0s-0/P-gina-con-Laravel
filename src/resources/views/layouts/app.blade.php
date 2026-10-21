@@ -97,8 +97,10 @@
         </div>
     </nav>
 
-    <main class="flex flex-1 items-center justify-center px-4 py-10">
-        <div class="w-full max-w-md rounded-[14px] bg-white px-7 py-8 text-center shadow-[0_12px_32px_rgba(17,24,39,0.08)]">
+    <main class="flex flex-1 flex-col items-center justify-center gap-4 px-4 py-10">
+        @yield('before_card')
+
+        <div class="w-full @yield('card_width', 'max-w-md') rounded-[14px] bg-white px-7 py-8 text-center shadow-[0_12px_32px_rgba(17,24,39,0.08)]">
             @yield('content')
         </div>
     </main> 
